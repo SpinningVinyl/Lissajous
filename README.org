@@ -10,8 +10,6 @@ Written in Basic because we all know that Basic is most suitable for Windows app
 
 Initially I wanted to make a screensaver but changed my mind after discovering that it's impossible to make a QB64 program that works with multi-monitor setups (or could at least detect multiple monitors) without messing with the Windows API. 
 
-At first 
-
 ** Requirements
 - [[https://qb64.org/][QB64]]
 - A moderately modern version of Windows. While QB64 is also available for Linux and macOS, this application has not been tested in either Linux or macOS.
