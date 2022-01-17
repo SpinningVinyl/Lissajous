@@ -1,4 +1,4 @@
-_Title "Lissajous"
+_Title "Lissajous (32-bit color)"
 
 ' ==== variable declarations ====
 
@@ -10,74 +10,72 @@ Dim t# ' iterator used to draw the Lissajous curves
 Dim x%, y% ' horizontal and vertical coordinates of the curent dot
 Dim centerX%, centerY% ' coordinates of the center of the screen
 Dim a! ' frequency ratio of the equations for X and Y
-Dim col% ' color of the curve
 Dim delta# ' value used to increase the iterator with each iteration
 Dim cycles% ' number of cycles per second
-
-' mouse functionality has been disabled
-' Dim mouseMoveX%, mouseMoveY% ' used to trap mouse input
+Dim gradientColor~& ' this variable holds the color of the current dot being drawn
+Dim relativeX#, relativeY# ' relative coordinates of the current dot
+Dim phaseDenominator% 'denominator of the phase difference between x and y
 
 setupScreen
 
 ' this calculations are used to make sure that the curves are drawn without gaps
 ' and that the speed is consistent between different systems and screen resolutions
-delta# = 5 / Sqr(_Width ^ 2 + _Height ^ 2)
+delta# = 1 / Sqr(_Width ^ 2 + _Height ^ 2)
 cycles% = Int(5 / delta#)
 
 ' find the center of the screen and the maximum dimensions of the curves
 centerX% = _Width / 2
 centerY% = _Height / 2
 maxX% = _Width / 2.2
-maxY% = _Height / 3.3
+maxY% = _Height / 2.2
 
 ' initial color
-col% = 48
+' col% = 48
 
 ' initial frequency ratio
 a! = 0.1
 
 ' ==== main loop ====
+phaseDenominator% = 1
 Do
-    t# = T_MIN
-    Do While t# <= T_MAX
-        _Limit cycles% ' limit the drawing speed
+    a! = 0.1
+    Do While a! < 1.6
+        t# = T_MIN
+        Do While t# <= T_MAX
+            _Limit cycles% ' limit the drawing speed
 
-        ' Do While _MouseInput ' trapping mouse input
-        '     mouseMoveX% = mouseMoveX% + _MouseMovementX
-        '     mouseMoveY% = mouseMoveY% + _MouseMovementY
-        ' Loop
+            ' exit if there is any keyboard input
+            If InKey$ <> "" Then
+                System
+            End If
 
-        ' exit if there is any keyboard input
-        ' If InKey$ <> "" Or mouseMoveX% <> 0 Or mouseMoveY% <> 0 Then
-        If InKey$ <> "" Then
-            System
-        End If
+            ' calculate the coordinates of the current point
+            x% = centerX% + Int(maxX% * Sin(a! * t# + _Pi(1 / phaseDenominator%)))
+            y% = centerY% + Int(maxY% * Sin(t#))
+            relativeX# = x% / _DesktopWidth ' relative X coordinate
+            relativeY# = y% / _DesktopHeight ' relative Y coordinate
+            gradientColor~& = _RGB32((64 * Sin(relativeX# + 2 * t#) + 192) / 2, (64 * Cos(relativeY# + 2 * t#) + 192) / 2, (64 * Cos(relativeX# + relativeY# + 2 * t#) + 192) / 2)
 
-        ' calculate the coordinates of the current point
-        x% = centerX% + Int(maxX% * Sin(a! * t# + _Pi(1 / 3)))
-        y% = centerY% + Int(maxY% * Sin(t#))
+            PSet (x%, y%), gradientColor~& ' draw the current point
 
-        PSet (x%, y%), col% ' draw the current point
+            t# = t# + delta# ' increment the iterator
+        Loop
 
-        t# = t# + delta# ' increment the iterator
+        _Delay 1 ' one second of delay before moving to the next curve
+        Cls ' clear screen
+
+        a! = a! + 0.1 ' increment the frequency ratio
     Loop
 
-    _Delay 1 ' one second of delay before moving to the next curve
-    Cls ' clear screen
-
-    col% = col% + 1 ' increment the color
-    If col% > 128 Then ' if we run out of colors, cycle back to the initial color
-        col% = 48
-    End If
-
-    a! = a! + 0.1 ' increment the frequency ratio
-    If a! = 2 Then ' cycle back to the initial frequency ratio
-        a! = 0.1
+    ' increment the phase denominator
+    phaseDenominator% = phaseDenominator% + 1
+    If phaseDenominator% = 6 Then ' if phase denominator is > 4, cycle back to 2
+        phaseDenominator% = 2
     End If
 Loop
 
 Sub setupScreen ()
-    Screen _NewImage(_DesktopWidth, _DesktopHeight, 256)
+    Screen _NewImage(_DesktopWidth, _DesktopHeight, 32)
     _MouseHide
     _FullScreen
     Cls

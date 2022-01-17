@@ -1,5 +1,3 @@
-#+STARTUP: inlineimages
-
 * Lissajous
 
 This is a silly program for Windows that displays beautiful curves called "Lissajous figures" on your screen.
@@ -8,7 +6,12 @@ The program runs in full screen. Press any key to exit.
 
 Written in Basic because we all know that Basic is most suitable for Windows application development, right? (Just kidding.)
 
-Initially I wanted to make a screensaver but changed my mind after discovering that it's impossible to make a QB64 program that works with multi-monitor setups (or could at least detect multiple monitors) without messing with the Windows API. 
+Initially I wanted to make a screensaver but changed my mind after discovering that it's impossible to make a QB64 program that works with multi-monitor setups (or could at least detect multiple monitors) without messing with the Windows API.
+
+** New in version 220116
+- Full-color mode instead of 256 colors.
+- The curves are now displayed using color gradients instead of a limited selection of solid colors.
+- The program now cycles through different values of phase shift between /x/ and /y/ in addition to different frequency ratios.
 
 ** Requirements
 - [[https://qb64.org/][QB64]]
